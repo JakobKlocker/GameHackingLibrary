@@ -4,6 +4,8 @@
 #include <TlHelp32.h>
 #include <string.h>
 #include <psapi.h>
+#include <vector>
+#include <array>
 
 DWORD getProcID(const wchar_t* name);
 HANDLE  getProcHandle(DWORD pid);
@@ -136,5 +138,18 @@ namespace internal
         for (int i = 0; i < SIZE; i++)
             internal::writeMemory<BYTE>(addr, 0x90);
         internal::protectMemory<BYTE[SIZE]>(addr, oldProtection);
+    }
+
+    void    x64_detour(DWORD64* target, DWORD64 hook)
+    {
+        std::array<BYTE, 12> jmp_hook{ {
+            0x48, 0xB8, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,     // mov rax, 00000 << replaced with our function bytes
+            0xFF, 0xE0                                                      // jmp rax
+            } };
+        *reinterpret_cast<DWORD64*>(jmp_hook.data() + 2) = hook;
+        DWORD oldProt = 0;
+        VirtualProtectEx(GetCurrentProcess(), (LPVOID)target, jmp_hook.size(), PAGE_EXECUTE_READWRITE, &oldProt);
+        WriteProcessMemory(GetCurrentProcess(), (LPVOID)target, jmp_hook.data(), jmp_hook.size(), NULL);
+        VirtualProtectEx(GetCurrentProcess(), (LPVOID)target, jmp_hook.size(), oldProt, &oldProt);
     }
 }
