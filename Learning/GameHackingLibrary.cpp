@@ -1,10 +1,5 @@
 #include "GameHackingLibrary.hpp"
 
-DWORD getProcID(const wchar_t* name);
-HANDLE  getProcHandle(DWORD pid);
-int injector(const wchar_t* dllPath, HANDLE proc);
-
-
 namespace external
 {
 
