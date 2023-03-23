@@ -1,21 +1,9 @@
-// Learning.cpp : This file contains the 'main' function. Program execution begins and ends there.
-#include <iostream>
-#include <Windows.h>
-#include <TlHelp32.h>
-#include <string.h>
-#include <psapi.h>
-#include <vector>
-#include <array>
+#include "GameHackingLibrary.hpp"
 
 DWORD getProcID(const wchar_t* name);
 HANDLE  getProcHandle(DWORD pid);
 int injector(const wchar_t* dllPath, HANDLE proc);
 
-//int main()
-//{
-//    getProcID(L"Discord.exe");
-//    return (0);
-//} 
 
 namespace external
 {
@@ -43,8 +31,8 @@ namespace external
         {
             while (Process32Next(snap, &entry))
             {
-                if (wcscmp(name, entry.szExeFile) == 0)
-                    LoadLibaryInjector(L"C:\\MessageBoxDLL.dll", getProcHandle(entry.th32ProcessID)); //if more than one process, inject it into all with that name
+                //if (wcscmp(name, entry.szExeFile) == 0)
+                //    LoadLibaryInjector(L"C:\\MessageBoxDLL.dll", getProcHandle(entry.th32ProcessID)); //if more than one process, inject it into all with that name
             }
         }
         std::cout << "Process not found\n";
